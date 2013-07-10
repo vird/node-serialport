@@ -12,7 +12,9 @@ var path = require('path');
 var async = require('async');
 var child_process = require('child_process');
 
-var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
+// Baud rate is now a user settable value -- we do not verify any longer and do not restrict any longer.
+// var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
+
 var DATABITS = [8, 7, 6, 5];
 var STOPBITS = [1, 2, 1.5];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
@@ -55,8 +57,8 @@ function SerialPort (path, options, openImmediately) {
   openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
 
   var self = this;
-
-  if (BAUDRATES.indexOf(options.baudrate) == -1) {
+  // Baud rate is now a user settable value -- we do not verify any longer and do not restrict any longer.
+  if (isNumeric(options.baudrate) && options.baudrate > 0) {
     throw new Error('Invalid "baudrate": ' + options.baudrate);
   }
   if (DATABITS.indexOf(options.databits) == -1) {
@@ -167,7 +169,7 @@ SerialPort.prototype.write = function (buffer, callback) {
 
 SerialPort.prototype.close = function (callback) {
   var self = this;
-  
+
   var fd = this.fd;
   this.fd = 0;
 
@@ -262,7 +264,7 @@ function listUnix (callback) {
     }, callback);
   });
 }
-  
+
 
 if (process.platform === 'win32') {
   exports.list = SerialPortBinding.list
