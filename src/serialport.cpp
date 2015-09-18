@@ -329,7 +329,6 @@ void EIO_AfterWrite(uv_work_t* req) {
     argv[0] = NanUndefined();
     argv[1] = NanNew<v8::Int32>(data->result);
   }
-  data->callback->Call(2, argv);
 
   if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
@@ -339,6 +338,7 @@ void EIO_AfterWrite(uv_work_t* req) {
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
   }
+  data->callback->Call(2, argv);
 
   int fd = data->fd;
   _WriteQueue *q = qForFD(fd);
